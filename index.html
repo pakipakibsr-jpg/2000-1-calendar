@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>万年カレンダー</title>
+        <head>
+    <meta charset="UTF-8">
+    <title>万年カレンダー</title>
+<!--CSSでスタイル調整-->
+    <style>
+        body {
+            text-align: center;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+        }
+
+        th:first-child,
+        td:first-child {
+        color: red;
+        }
+
+        th:last-child,
+        td:last-child {
+        color: blue;
+        }
+    </style>
+
+</head>
+<body>
+    <h1>万年カレンダー</h1>
+    <p>2000年1月以降のcalendarを表示します。<br>
+    西暦と月を入力し、表示ボタンをクリックしてください。</p>
+    <p><input type="text" id="year">年<input type="text" id="month">月</p>
+    <input type="button" value="表示" id="btn1"><br>
+    <br>
+    <input type="button" value="前月" id="btn2">
+    <input type="button" value="次月" id="btn3">
+    <table></table>
+    <script>
+        let lastDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];//末日
+        let baseDay=6;//2000/1/1
+
+        const Year=document.getElementById("year");
+        const Month=document.getElementById("month");
+        const Btn1=document.getElementById("btn1");
+        const Btn2=document.getElementById("btn2");
+        const Btn3=document.getElementById("btn3");
+        const Table=document.getElementsByTagName("table");
+
+          //関数を作る
+            function makeCalendar(year,month){
+             let passedDays=0//2000/1/1からの経過日数
+
+        for(let i=2000;i<year;i++){
+            if(i%400===0||i%4===0&&i%100!==0){
+                passedDays+=366;
+            }
+            else{passedDays+=365};
+        };
+        for(let j=0;j<month-1;j++){
+            passedDays+=lastDays[j];
+        }
+            let days=(baseDay+passedDays)%7;//入力した年月の１日の曜日
+
+            let lastDay=lastDays[month-1];
+            if(year%400===0||year%4===0&&year%100!==0){
+                if(month===2){
+                    lastDay=29
+                }
+            };
+            let day=1-days;
+            let calendar="<caption>"+year+"年"+month+"月</caption>";
+                calendar+="<tr>";
+                calendar+="<th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>";
+                calendar+="</tr>";
+
+            while(day <= lastDay){
+             calendar += "<tr>";
+             for(let i = 0; i < 7; i++){
+                if(day < 1 || day > lastDay){
+                 calendar += "<td>&nbsp;</td>";
+                }
+                else {
+            calendar += "<td>" + day + "</td>";
+         }
+         day++;
+        }
+                calendar+="</tr>";
+    }
+        Table[0].innerHTML=calendar;           
+            }
+        
+        //表示ボタン
+        Btn1.addEventListener("click",function(){
+            let year = Number(Year.value);
+            let month = Number(Month.value);
+            //エラーメッセージ//
+             if(isNaN(year) || isNaN(month)){
+            alert("数字を入力してください");
+            return;
+            }
+
+            if(year < 2000){
+            alert("2000年以降の年を入力してください");
+                return;
+            }
+
+            if(month < 1 || month > 12){
+            alert("1月から12月を入力してください");
+            return;
+            }
+            //ここまでエラーメッセージ//
+            makeCalendar(year,month);
+        });
+
+        //前月ボタン
+                Btn2.addEventListener("click",function(){
+                    let year = Number(Year.value);
+                    let month = Number(Month.value);
+                    if(year === 2000 && month === 1){
+                       return;
+                    }//2000年より前に戻れないようにする
+
+                    month--
+
+                    if(month<1){
+                        year-=1
+                        month=12
+                    }
+                    Year.value=year;
+                    Month.value=month;
+
+                    makeCalendar(year,month);
+                });
+    
+        //次月ボタン
+                Btn3.addEventListener("click",function(){
+                    let year = Number(Year.value);
+                    let month = Number(Month.value);
+
+                       month++;
+
+                    if(month>12){
+                        year+=1;
+                        month=1;
+                    }
+                    Year.value=year;
+                    Month.value=month;
+
+                    makeCalendar(year,month);
+                });
+        //デザインの調整
+        const Body=getElementsByTagName("body");
+    </script>
+</body>
+</html>
